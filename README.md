@@ -38,3 +38,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ## Enhancements from initial version
 
 - Adding video generation capabilities
+- adding..
