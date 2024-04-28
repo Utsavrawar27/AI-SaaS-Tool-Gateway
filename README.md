@@ -39,4 +39,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 - Adding video generation capabilities using replicate.com AI
 - API token from replicate.com free tier is added to .env variable REPLICATE_API_TOKEN
+  - Create your own token at https://replicate.com/account/api-tokens
 - Optimized the page navigation and color codes for video navigation page.
