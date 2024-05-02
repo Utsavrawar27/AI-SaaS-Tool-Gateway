@@ -14,15 +14,18 @@ import { fromSchema } from "./constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
+import { useProModal } from "@/hooks/use-pro-modal";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/bot-avatar";
 
 const CodePage = () => {
     const router = useRouter();
+    const proModal = useProModal();
     const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
 
     const form = useForm<z.infer<typeof fromSchema>>({
@@ -49,8 +52,11 @@ const CodePage = () => {
             
             form.reset();
           } catch (error: any) {
-            // TODO: Open Pro Model
-            console.log(error);
+            if (error?.response?.status === 403) {
+                proModal.onOpen();
+            } else {
+                toast.error("Something went wrong.");
+            }
           } finally {
             router.refresh();
           }
