@@ -105,37 +105,53 @@ const CodePage = () => {
                 </div>
             )}
             {messages.length === 0 && !isLoading && (
-                <Empty label="No conversation started." />
-            )}
-            <div className="flex flex-col-reverse gap-y-4">
-                {messages.map((message) => (
-                <div 
-                    key={message.content} 
-                    className={cn(
-                    "p-8 w-full flex items-start gap-x-8 rounded-lg",
-                    message.role === "user" ? "bg-white border border-black/10" :"bg-muted",
+                        <Empty label="No conversation started." />
                     )}
-                >
-                    {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                    <ReactMarkdown components={{
-                        pre: ({ node, ...props }) => (
-                            <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
-                                <pre {...props} />
-                            </div>
-                        ),
-                        code: ({ node, ...props }) => (
-                            <code className="bg-black/10 rounded-lg p-1" {...props} />
-                        )
-                    }} className="text-sm overflow-hidden leading-7">
-                        {message.content || ""}
-                    </ReactMarkdown>
+                    <div className="flex flex-col gap-y-4">
+                        {messages.map((message, index) => (
+                            index % 2 === 0 && (
+                                <div key={index}>
+                                    <div 
+                                        className={cn(
+                                            "p-8 w-full flex items-start gap-x-8 rounded-lg",
+                                            "bg-white border border-black/10"
+                                        )}
+                                    >
+                                        <UserAvatar />
+                                        <p className="text-sm">
+                                            {messages[index].content}
+                                        </p>
+                                    </div>
+                                    {index + 1 < messages.length && (
+                                        <div 
+                                            className={cn(
+                                                "p-8 w-full flex items-start gap-x-8 rounded-lg",
+                                                "bg-muted"
+                                            )}
+                                        >
+                                            <BotAvatar />
+                                            <ReactMarkdown components={{
+                                                pre: ({ node, ...props }) => (
+                                                    <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
+                                                        <pre {...props} />
+                                                    </div>
+                                                ),
+                                                code: ({ node, ...props }) => (
+                                                    <code className="bg-black/10 rounded-lg p-1" {...props} />
+                                                )
+                                            }} className="text-sm overflow-hidden leading-7">
+                                                {messages[index + 1].content || ""}
+                                            </ReactMarkdown>
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        ))}
+                    </div>
                 </div>
-                ))}
             </div>
         </div>
-    </div>
-</div>
-);
+    );
 }
 
 export default CodePage;
