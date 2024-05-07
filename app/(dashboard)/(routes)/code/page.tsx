@@ -14,15 +14,18 @@ import { fromSchema } from "./constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
+import { useProModal } from "@/hooks/use-pro-modal";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/bot-avatar";
 
 const CodePage = () => {
     const router = useRouter();
+    const proModal = useProModal();
     const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
 
     const form = useForm<z.infer<typeof fromSchema>>({
@@ -49,8 +52,11 @@ const CodePage = () => {
             
             form.reset();
           } catch (error: any) {
-            // TODO: Open Pro Model
-            console.log(error);
+            if (error?.response?.status === 403) {
+                proModal.onOpen();
+            } else {
+                toast.error("Something went wrong.");
+            }
           } finally {
             router.refresh();
           }
@@ -99,37 +105,53 @@ const CodePage = () => {
                 </div>
             )}
             {messages.length === 0 && !isLoading && (
-                <Empty label="No conversation started." />
-            )}
-            <div className="flex flex-col-reverse gap-y-4">
-                {messages.map((message) => (
-                <div 
-                    key={message.content} 
-                    className={cn(
-                    "p-8 w-full flex items-start gap-x-8 rounded-lg",
-                    message.role === "user" ? "bg-white border border-black/10" :"bg-muted",
+                        <Empty label="No conversation started." />
                     )}
-                >
-                    {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                    <ReactMarkdown components={{
-                        pre: ({ node, ...props }) => (
-                            <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
-                                <pre {...props} />
-                            </div>
-                        ),
-                        code: ({ node, ...props }) => (
-                            <code className="bg-black/10 rounded-lg p-1" {...props} />
-                        )
-                    }} className="text-sm overflow-hidden leading-7">
-                        {message.content || ""}
-                    </ReactMarkdown>
+                    <div className="flex flex-col gap-y-4">
+                        {messages.map((message, index) => (
+                            index % 2 === 0 && (
+                                <div key={index}>
+                                    <div 
+                                        className={cn(
+                                            "p-8 w-full flex items-start gap-x-8 rounded-lg",
+                                            "bg-white border border-black/10"
+                                        )}
+                                    >
+                                        <UserAvatar />
+                                        <p className="text-sm">
+                                            {messages[index].content}
+                                        </p>
+                                    </div>
+                                    {index + 1 < messages.length && (
+                                        <div 
+                                            className={cn(
+                                                "p-8 w-full flex items-start gap-x-8 rounded-lg",
+                                                "bg-muted"
+                                            )}
+                                        >
+                                            <BotAvatar />
+                                            <ReactMarkdown components={{
+                                                pre: ({ node, ...props }) => (
+                                                    <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
+                                                        <pre {...props} />
+                                                    </div>
+                                                ),
+                                                code: ({ node, ...props }) => (
+                                                    <code className="bg-black/10 rounded-lg p-1" {...props} />
+                                                )
+                                            }} className="text-sm overflow-hidden leading-7">
+                                                {messages[index + 1].content || ""}
+                                            </ReactMarkdown>
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        ))}
+                    </div>
                 </div>
-                ))}
             </div>
         </div>
-    </div>
-</div>
-);
+    );
 }
 
 export default CodePage;
