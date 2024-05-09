@@ -1,0 +1,7 @@
+{
+    "functions": {
+      "api/conversation/*": {
+        "maxDuration": 300
+      }
+    }
+  }
