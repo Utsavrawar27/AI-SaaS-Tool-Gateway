@@ -140,7 +140,7 @@ const ConversationPage = () => {
                                             )}
                                         >
                                             <BotAvatar />
-                                            <div className="text-sm space-y-2" dangerouslySetInnerHTML={{ __html: formatText(messages[index + 1].content) }} />
+                                            <div className="text-sm space-y-2" dangerouslySetInnerHTML={{ __html: formatText(messages[index + 1].content || "") }} />
                                         </div>
                                     )}
                                 </div>
